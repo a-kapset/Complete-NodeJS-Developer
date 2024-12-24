@@ -15,8 +15,8 @@ app.use(express.static(path.join(__dirname, '..', 'public')))
 app.use(planetsRouter)
 app.use(launchesRouter)
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname, '..', 'public', 'index.html')
-})
+app.get('/*', (req, res) => {
+  return res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))
+}) // https://create-react-app.dev/docs/deployment#serving-apps-with-client-side-routing
 
 module.exports = app
