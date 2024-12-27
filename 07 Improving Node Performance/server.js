@@ -1,4 +1,7 @@
 const express = require('express')
+const os = require('node:os')
+const cluster = require('node:cluster')
+cluster.schedulingPolicy = cluster.SCHED_RR // set round-robin policy for Windows OS
 
 const app = express()
 
@@ -10,12 +13,22 @@ function delay(duration) {
 }
 
 app.get('/', (req, res) => {
-  res.send('Performance example')
+  res.send(`Performance example ${process.pid}`)
 })
 
-app.get('/timer', (req, res) => {
-  delay(5000)
-  res.send('Ding-ding! Wake up')
+app.get('/timer', async (req, res) => {
+  delay(7000)
+
+  res.send(`Ding-ding! Wake up ${process.pid}`)
 })
 
-app.listen(3000)
+if (cluster.isPrimary) {
+  console.log('>>>>> Master process started')
+  const NUM_WORKERS = os.cpus().length
+  for (let i = 0; i < NUM_WORKERS; i++) {
+    cluster.fork()
+  }
+} else {
+  console.log(`>>>>> Worker process started with id ${process.pid}`)
+  app.listen(3000)
+}
