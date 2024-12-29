@@ -1,7 +1,7 @@
 const launches = require('./launches.mongo')
 const planets = require('./planets.mongo')
 
-let latestFlightNumber = 100
+const DEFAULT_FLIGHT_NUMBER = 100
 
 const launch = {
   flightNumber: 100,
@@ -15,6 +15,12 @@ const launch = {
 }
 
 saveLaunch(launch)
+
+async function getLatestFlightNumber() {
+  const latestLaunch = await launches.findOne().sort('-flightNumber') // sort in desc order by flightNumber
+  if (!latestLaunch) return DEFAULT_FLIGHT_NUMBER
+  return latestLaunch.flightNumber
+}
 
 async function getAllLaunches() {
   return await launches.find({}, { __v: 0, _id: 0 }) // __v & _id are excluded from db response
