@@ -1,7 +1,7 @@
-const launches = require('./launches.mongo')
-const planets = require('./planets.mongo')
+const launches = require('./launches.mongo');
+const planets = require('./planets.mongo');
 
-const DEFAULT_FLIGHT_NUMBER = 100
+const DEFAULT_FLIGHT_NUMBER = 100;
 
 const launch = {
   flightNumber: 100,
@@ -12,24 +12,24 @@ const launch = {
   customers: ['ZTM', 'NASA'],
   upcoming: true,
   success: true,
-}
+};
 
-saveLaunch(launch)
+saveLaunch(launch);
 
 async function getLatestFlightNumber() {
-  const latestLaunch = await launches.findOne().sort('-flightNumber') // sort in desc order by flightNumber
-  if (!latestLaunch) return DEFAULT_FLIGHT_NUMBER
-  return latestLaunch.flightNumber
+  const latestLaunch = await launches.findOne().sort('-flightNumber'); // sort in desc order by flightNumber
+  if (!latestLaunch) return DEFAULT_FLIGHT_NUMBER;
+  return latestLaunch.flightNumber;
 }
 
 async function getAllLaunches() {
-  return await launches.find({}, { __v: 0, _id: 0 }) // __v & _id are excluded from db response
+  return await launches.find({}, { __v: 0, _id: 0 }); // __v & _id are excluded from db response
 }
 
 async function saveLaunch(launch) {
-  const planet = await planets.findOne({ keplerName: launch.target })
+  const planet = await planets.findOne({ keplerName: launch.target });
 
-  if (!planet) throw new Error('No matching files found')
+  if (!planet) throw new Error('No matching files found');
 
   await launches.updateOne(
     {
@@ -37,36 +37,35 @@ async function saveLaunch(launch) {
     },
     launch,
     { upsert: true }
-  )
+  );
 }
 
-function addNewLaunch(launch) {
-  latestFlightNumber++
-  launches.set(
-    latestFlightNumber,
-    Object.assign(launch, {
-      flightNumber: latestFlightNumber,
-      customers: ['ZTM', 'NASA'],
-      upcoming: true,
-      success: true,
-    })
-  )
+async function scheduleNewLaunch(launch) {
+  const newFlightNumber = (await getLatestFlightNumber()) + 1;
+  const newLaunch = Object.assign(launch, {
+    flightNumber: newFlightNumber,
+    customers: ['ZTM', 'NASA'],
+    upcoming: true,
+    success: true,
+  });
+
+  await saveLaunch(newLaunch);
 }
 
 function existsLaunchWithId(launchId) {
-  return launches.has(launchId)
+  return launches.has(launchId);
 }
 
 function abortLaunchById(launchId) {
-  const aborted = launches.get(launchId)
-  aborted.upcoming = false
-  aborted.success = false
-  return aborted
+  const aborted = launches.get(launchId);
+  aborted.upcoming = false;
+  aborted.success = false;
+  return aborted;
 }
 
 module.exports = {
-  getAllLaunches,
-  addNewLaunch,
   existsLaunchWithId,
+  getAllLaunches,
+  scheduleNewLaunch,
   abortLaunchById,
-}
+};
