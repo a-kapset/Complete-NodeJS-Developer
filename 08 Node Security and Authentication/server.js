@@ -30,6 +30,16 @@ function verifyCallback(accessToken, refreshToken, profile, done) {
 
 passport.use(new Strategy(AUTH_OPTIONS, verifyCallback));
 
+// save the session to the cookie
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+// read the session from the cookie
+passport.deserializeUser((id, done) => {
+  done(null, id);
+});
+
 const app = express();
 
 app.use(helmet());
@@ -54,6 +64,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(passport.initialize());
+app.use(passport.session());
 
 function checkLoggedIn(req, res, next) {
   const isLoggedIn = true;
@@ -73,7 +84,7 @@ app.get(
   passport.authenticate('google', {
     failureRedirect: '/failure',
     successRedirect: '/',
-    session: false,
+    session: true,
   }),
   (req, res) => {
     console.log('Google called us back!');
