@@ -13,5 +13,5 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: cd 06\ NASA\ Project/
+      - run: cd ./06 NASA Project/
       - run: npm install
