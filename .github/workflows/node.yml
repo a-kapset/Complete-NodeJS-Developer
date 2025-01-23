@@ -1,9 +1,15 @@
 name: NASA project CI
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+defaults:
+  run:
+    working-directory: 06_NASA_Project
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,5 +19,4 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: cd /06_NASA_Project
       - run: npm install
