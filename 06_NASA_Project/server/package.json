@@ -18,6 +18,7 @@
   "description": "",
   "dependencies": {
     "06-nasa-project": "file:..",
+    "axios": "^1.7.9",
     "cors": "^2.8.5",
     "csv-parse": "^5.6.0",
     "dotenv": "^16.4.7",

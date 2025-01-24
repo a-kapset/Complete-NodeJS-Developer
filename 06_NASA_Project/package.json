@@ -5,7 +5,7 @@
   "scripts": {
     "install:server": "npm install --prefix server",
     "install:client": "npm install --prefix client",
-    "install-all": "npm run install:server && npm run install:client",
+    "install:all": "npm run install:server && npm run install:client",
     "server:start": "npm run watch --prefix server",
     "client:start": "npm start --prefix client",
     "watch-all": "concurrently \"npm run server:start\" \"npm run client:start\"",
@@ -19,8 +19,5 @@
   "description": "",
   "devDependencies": {
     "concurrently": "^9.1.0"
-  },
-  "dependencies": {
-    "axios": "^1.7.9"
   }
 }
